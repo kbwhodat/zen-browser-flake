@@ -18,7 +18,7 @@
   version,
   url,
   hash,
-  # Adding this so I can use add-ons like browserpass and trydactyl
+  # Adding this so I can use add-ons like browserpass and trydactyl on firefox
   nativeMessagingHosts ? [],
   ...
 }:
