@@ -18,6 +18,8 @@
   version,
   url,
   hash,
+  # Adding this so I can use add-ons like browserpass and trydactyl
+  nativeMessagingHosts ? [],
   ...
 }:
 let
@@ -47,7 +49,8 @@ stdenv.mkDerivation (finalAttrs: {
     adwaita-icon-theme
     dbus-glib
     libXtst
-  ];
+  ]
+  ++ nativeMessagingHosts;
 
   runtimeDependencies = [
     curl
