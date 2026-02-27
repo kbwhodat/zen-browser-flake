@@ -30,6 +30,8 @@ export def generate_sources []: nothing -> record {
 
   let x86_64_url = $"https://github.com/zen-browser/desktop/releases/download/($tag)/zen.linux-x86_64.tar.xz"
   let aarch64_url = $"https://github.com/zen-browser/desktop/releases/download/($tag)/zen.linux-aarch64.tar.xz"
+  let darwin_universal_url = $"https://github.com/zen-browser/desktop/releases/download/($tag)/zen.macos-universal.dmg"
+  let darwin_universal_hash = (get_nix_hash $darwin_universal_url)
   let sources = {
 	version: $tag
 	x86_64-linux: {
@@ -39,6 +41,14 @@ export def generate_sources []: nothing -> record {
 	aarch64-linux: {
 	  url: $aarch64_url
 	  hash: (get_nix_hash $aarch64_url)
+	}
+	x86_64-darwin: {
+	  url: $darwin_universal_url
+	  hash: $darwin_universal_hash
+	}
+	aarch64-darwin: {
+	  url: $darwin_universal_url
+	  hash: $darwin_universal_hash
 	}
   }
 

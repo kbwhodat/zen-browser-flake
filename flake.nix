@@ -14,6 +14,8 @@
       supportedSystems = [
         "x86_64-linux"
         "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
       ];
       forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
     in
@@ -24,15 +26,26 @@
           pkgs = import nixpkgs { inherit system; };
           sources = builtins.fromJSON (builtins.readFile ./sources.json);
         in
-        rec {
-          zen-browser-unwrapped = pkgs.callPackage ./zen-browser-unwrapped.nix {
-            inherit (sources.${system}) hash url;
-            inherit (sources) version;
-          };
-          zen-browser = pkgs.callPackage ./zen-browser.nix { inherit zen-browser-unwrapped; };
-          zen-browser-generic = builtins.trace "WARNING: Zen upstream no longer differentiates between specific and generic builds, this package is kept for flake backwards-compatibility only. Please use the default `zen-browser` package instead." zen-browser;
-          default = zen-browser;
-        }
+        if pkgs.stdenv.hostPlatform.isDarwin then
+          rec {
+            zen-browser-bin-darwin = pkgs.callPackage ./zen-browser-bin-darwin.nix {
+              inherit (sources.${system}) hash url;
+              inherit (sources) version;
+            };
+            zen-browser = zen-browser-bin-darwin;
+            zen-browser-generic = builtins.trace "WARNING: Zen upstream no longer differentiates between specific and generic builds, this package is kept for flake backwards-compatibility only. Please use the default `zen-browser` package instead." zen-browser;
+            default = zen-browser;
+          }
+        else
+          rec {
+            zen-browser-unwrapped = pkgs.callPackage ./zen-browser-unwrapped.nix {
+              inherit (sources.${system}) hash url;
+              inherit (sources) version;
+            };
+            zen-browser = pkgs.callPackage ./zen-browser.nix { inherit zen-browser-unwrapped; };
+            zen-browser-generic = builtins.trace "WARNING: Zen upstream no longer differentiates between specific and generic builds, this package is kept for flake backwards-compatibility only. Please use the default `zen-browser` package instead." zen-browser;
+            default = zen-browser;
+          }
       );
 
       apps = forAllSystems (
